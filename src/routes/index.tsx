@@ -1,31 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useState } from 'react';
-import { getAllPokemon, type PokemonItem } from '@/pokemon_api';
-import { runtime } from '@/runtime';
+import { getAllPokemon } from '@/pokemon_api';
+import { runtimeAtom } from '@/runtime';
+import { useAtomValue } from '@effect-atom/atom-react';
 
 export const Route = createFileRoute('/')({
   component: App,
 })
 
+const allPokemonsAtom = runtimeAtom.atom(getAllPokemon)
+
 function App() {
 
-  const [loading, setLoading] = useState(true);
-  const [pokemonList, setPokemonList] = useState<ReadonlyArray<PokemonItem>>([]);
-  const [error, setError] = useState<string | null>(null);
+  const state = useAtomValue(allPokemonsAtom)
 
-  useEffect(() => {
-    runtime.runPromiseExit(getAllPokemon).then(exit => {
-      if (exit._tag === 'Success') {
-        setPokemonList(exit.value);
-        setLoading(false);
-      } else {
-        setError('Failed to fetch Pokémon data.');
-        setLoading(false);
-      }
-    })
-  }, []);
-
-  if (loading) {
+  if (state._tag === "Initial") {
     return (
       <div className="text-center">
         <p>Loading...</p>
@@ -33,10 +21,10 @@ function App() {
     )
   }
 
-  if (error) {
+  if (state._tag === "Failure") {
     return (
       <div className="text-center">
-        <p>{error}</p>
+        <p>{String(state.cause)}</p>
       </div>
     )
   }
@@ -56,7 +44,7 @@ function App() {
           Pokémon List
         </h2>
         <ul className="max-h-[600px] overflow-y-auto bg-white rounded-lg shadow-md border border-gray-200 divide-y divide-gray-100">
-          {pokemonList.map((pokemon, index) => (
+          {state.value.map((pokemon, index) => (
             <li
               key={pokemon.name}
               className="px-6 py-4 hover:bg-blue-50 transition-colors duration-200 cursor-pointer"
