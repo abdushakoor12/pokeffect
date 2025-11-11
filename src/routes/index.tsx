@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import logo from '../logo.svg'
 import { useEffect, useState } from 'react';
 import { getAllPokemon, type PokemonItem } from '@/pokemon_api';
 import { runtime } from '@/runtime';
@@ -11,7 +10,7 @@ export const Route = createFileRoute('/')({
 function App() {
 
   const [loading, setLoading] = useState(true);
-  const [pokemonList, setPokemonList] = useState<PokemonItem[]>([]);
+  const [pokemonList, setPokemonList] = useState<ReadonlyArray<PokemonItem>>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
