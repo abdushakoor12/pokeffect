@@ -1,4 +1,4 @@
-import { HttpClient, KeyValueStore } from "@effect/platform";
+import { HttpClient, HttpClientResponse, KeyValueStore } from "@effect/platform";
 import { Effect, Option, Schema } from "effect";
 import { decodeUnknown } from "effect/Schema";
 
@@ -49,8 +49,7 @@ export const getAllPokemon = Effect.gen(function* (){
 
     const httpClient = yield* HttpClient.HttpClient;
     const response = yield* httpClient.get(baseUrl + "pokemon?limit=100000&offset=0");
-    const json = yield* response.json;
-    const result = yield* decodeUnknown(PokemonResponseSchema)(json);
+    const result = yield* HttpClientResponse.schemaBodyJson(PokemonResponseSchema)(response);
     yield* savePokemonList(result.results);
     return result.results;
 });
