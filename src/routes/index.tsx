@@ -16,7 +16,7 @@ function App() {
   useEffect(() => {
     runtime.runPromiseExit(getAllPokemon).then(exit => {
       if (exit._tag === 'Success') {
-        setPokemonList(exit.value.results);
+        setPokemonList(exit.value);
         setLoading(false);
       } else {
         setError('Failed to fetch Pokémon data.');
